@@ -54,8 +54,8 @@ library(greta)
 x <- data$PA
 y <- data$Y
 
-int <- normal(0, 1e-6)
-coef <- normal(0, 1e-6)
+int <- normal(0, 1000)
+coef <- normal(0, 1000)
 
 linear_predictor <- int + coef * x
 p <- ilogit(linear_predictor)
@@ -122,8 +122,15 @@ accept <- function (params_new, params_old, data) {
   lp_old <- posterior(params_old, data)
   lp_new <- posterior(params_new, data)
   
-  log_diff <- lp_new - lp_old
-  log(runif(1)) < log_diff
+  if (!is.finite(lp_new)) {
+    accepted <- FALSE
+  } 
+  else {
+    log_diff <- lp_new - lp_old
+    accepted <- log(runif(1)) < log_diff
+  }
+  
+ accepted
 }
 ```
 
